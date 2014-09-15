@@ -242,7 +242,6 @@ public void compute(){
                 System.out.print("       " + matrizDominPar[i][r]);
             }  
         }
-       matrizDominPar = multiplica(matrizDominPar, normalizedVector);
     }
     
     private void soma_MatrizParcial(){
@@ -251,10 +250,11 @@ public void compute(){
         
         for (int i = 0; i < matrizDominPar.length; i++) {
                 for (int r = 0; r < matrizDominPar[0].length; r++) {
-                    sum = sum + matrizDominPar[i][r];
+                    System.out.println("Valor " + (r+1) + ": " + matrizDominPar[i][r]);
+                    sum += matrizDominPar[i][r];
                 }   
                 matrizDominFinal[line][col] = arredonda(sum);
-                System.out.println("Soma" + (i+1) + ": " + sum);
+                System.out.println("Soma " + (i+1) + ": " + matrizDominFinal[line][col]);
                 sum = 0;
                 line++;
             
@@ -275,20 +275,23 @@ public void compute(){
     private void normaliza_MatrizFinal(){
         double sum = 0.0, max = 0, min = 99999;
         for (int i = 0; i < matrizDominFinal.length; i++) {
+            max =  matrizDominFinal[i][0];
+            min = matrizDominFinal[i][0];
                 for (int r = 0; r < matrizDominFinal[0].length; r++) {
+                    System.out.println("Valor " + (r+1) + ": " + matrizDominFinal[i][r]);
                     sum = sum + matrizDominFinal[i][r];
                     if(matrizDominFinal[i][r] > max)
                         max = matrizDominFinal[i][r];
                     if (matrizDominFinal[i][r] < min)
                         min = matrizDominFinal[i][r];
             }
+            System.out.println("Soma: " + sum + " - Menor Valor: " + min + " - Maior Valor: " + max);
             resultadoFinal[i] = arredonda(calc_normaliza(sum, min, max));
+            //resultadoFinal[i] = sum;
             sum = 0.0;
-            max =  matrizDominFinal[i][0];
-            min = matrizDominFinal[i][0];
         }
-        
-        resultadoFinal = normaliza_vetor(resultadoFinal);
+               
+       // resultadoFinal = normaliza_vetor(resultadoFinal);
         
         for (int i = 0; i < resultadoFinal.length; i++) {
             System.out.println("\n Resultado " + (i+1) + " : " + resultadoFinal[i]);
@@ -301,15 +304,5 @@ public void compute(){
         result = ((soma - minimo) / (maximo - minimo));
         
         return result;
-    }
-    
-    private Double [][] multiplica(Double[][] matriz, Double[] vetor){
-        
-        for (int i = 0; i < matriz.length; i++) {
-            for (int j = 0; j < matriz[0].length; j++) {
-                matriz[i][j] = matriz[i][j] / vetor[j];
-            }
-        }
-        return matriz;
     }
 }
