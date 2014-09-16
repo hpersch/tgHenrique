@@ -275,8 +275,8 @@ public void compute(){
     private void normaliza_MatrizFinal(){
         double sum = 0.0, max = 0, min = 99999;
         for (int i = 0; i < matrizDominFinal.length; i++) {
-            max =  matrizDominFinal[i][0];
-            min = matrizDominFinal[i][0];
+            max =  matrizDominFinal[0][i];
+            min = matrizDominFinal[0][i];
                 for (int r = 0; r < matrizDominFinal[0].length; r++) {
                     System.out.println("Valor " + (r+1) + ": " + matrizDominFinal[i][r]);
                     sum = sum + matrizDominFinal[i][r];
@@ -286,12 +286,12 @@ public void compute(){
                         min = matrizDominFinal[i][r];
             }
             System.out.println("Soma: " + sum + " - Menor Valor: " + min + " - Maior Valor: " + max);
-            resultadoFinal[i] = arredonda(calc_normaliza(sum, min, max));
-            //resultadoFinal[i] = sum;
+            //resultadoFinal[i] = arredonda(calc_normaliza(sum, min, max));
+            resultadoFinal[i] = arredonda(sum);
             sum = 0.0;
         }
                
-       // resultadoFinal = normaliza_vetor(resultadoFinal);
+        //resultadoFinal = normaliza_vetor(resultadoFinal);
         
         for (int i = 0; i < resultadoFinal.length; i++) {
             System.out.println("\n Resultado " + (i+1) + " : " + resultadoFinal[i]);
