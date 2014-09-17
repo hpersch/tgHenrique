@@ -56,7 +56,7 @@ public void compute(){
 }
 
 public void normaliza (){
-    normalizedMatrix = normaliza_matriz(originalMatrix);
+    //normalizedMatrix = normaliza_matriz(originalMatrix);
     normalizedVector = normaliza_vetor(taxa_criterios);
 }
 
@@ -152,7 +152,7 @@ public void normaliza (){
     }
     
     private double maior_criterio(Double[] vetorMaior){
-        double maior_crit = 0;
+        double maior_crit = vetorMaior[0];
         for (int i = 0; i < vetorMaior.length; i++) {
                 if(vetorMaior[i] > maior_crit){
                     maior_crit = vetorMaior[i];
@@ -254,6 +254,7 @@ public void normaliza (){
                     sum += matrizDominFinal[i][r];
             }
             resultadoFinal[r] = sum;
+            System.out.println("Soma: " + resultadoFinal[r]);
             sum = 0.0;
         }
 

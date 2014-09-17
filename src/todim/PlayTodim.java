@@ -77,6 +77,12 @@ public class PlayTodim {
                                 {7.1,0.0,0.0,1.0,0.0}};
         
         Double [] criterio5 = {5.0, 3.0, 3.0, 3.0, 1.0};
+        
+        Double matrix6 [][] = {{1.00,0.82,0.00,0.00,0.91,0.00},
+                               {0.00,0.00,0.81,1.00,1.00,0.37},
+                               {0.30,1.00,1.00,0.14,0.00,1.00}};
+        
+        Double [] criterio6 = {0.17, 0.20, 0.20, 0.15, 0.15, 0.13};
 
         Todim todim1 = new Todim(matrix, criterio, 1);
         todim1.normaliza();
@@ -89,6 +95,10 @@ public class PlayTodim {
         Todim todim4 = new Todim(matrix5, criterio5, 1);
         //todim4.normaliza();
         //todim4.compute();
+        
+        Todim todim5 = new Todim(matrix6, criterio6, 1.0);
+        todim5.normaliza();
+        todim5.compute();
     }
     
 }
