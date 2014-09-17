@@ -23,17 +23,19 @@ public class Todim {
     private Double normalizedMatrix[][];
     private Double taxa_criterios[];
     private Double normalizedVector[];
-    private double maior_crit = 0;
+    private double sum_TxSubst = 0;
     private Double matrizDominPar[][];
     private Double matrizDominFinal[][];
     private Double resultadoFinal[];
+    private Double taxa_substituicao[];
     
-public Todim (Double[][] matriz, Double[] taxa_criterios){
+public Todim (Double[][] matriz, Double[] criterios){
 
     this.originalMatrix = matriz;
     this.normalizedMatrix = originalMatrix.clone();
-    this.normalizedVector = taxa_criterios.clone();
-    this.taxa_criterios = taxa_criterios.clone();
+    this.normalizedVector = criterios.clone();
+    this.taxa_criterios = criterios.clone();
+    this.taxa_substituicao = criterios.clone();
     compute();
     
 }
@@ -41,7 +43,6 @@ public Todim (Double[][] matriz, Double[] taxa_criterios){
 public void compute(){
     normalizedMatrix = normaliza_matrizCol(originalMatrix);
     normalizedVector = normaliza_vetor(taxa_criterios);
-    maior_criterio();
         int lin, col;
     lin = ((normalizedMatrix.length) * (normalizedMatrix.length));
     col = taxa_criterios.length;
@@ -53,7 +54,7 @@ public void compute(){
     
     executa();
     soma_MatrizParcial();
-    normaliza_MatrizFinal();
+    soma_MatrizFinal();
 }
 
 
@@ -155,13 +156,13 @@ public void compute(){
        
     }
     
-    private double maior_zero(double result_pesos, double a_rc, double soma){
+    private double maior_zero(double result_pesos, double a_rc){
         
         double multp_aux,  result;
                 
                 multp_aux = a_rc * result_pesos;
                 
-                result = sqrt(multp_aux / soma);
+                result = sqrt(multp_aux / sum_TxSubst);
                 
                 result = arredonda(result);
                 
@@ -172,11 +173,11 @@ public void compute(){
         return 0;
     }
     
-    private double menor_zero(double result_pesos, double a_rc, double soma, double fator_atenuacao){
+    private double menor_zero(double result_pesos, double a_rc, double fator_atenuacao){
         
         double multp_aux, divisao, result;
             
-            multp_aux = (result_pesos) * soma;
+            multp_aux = (result_pesos) * sum_TxSubst;
             
             divisao = (multp_aux) / a_rc;
             
@@ -187,25 +188,41 @@ public void compute(){
         return result;
     }
     
-    private void maior_criterio(){
-        for (int i = 0; i < normalizedVector.length; i++) {
-                if(normalizedVector[i] > maior_crit){
-                    maior_crit = normalizedVector[i];
+    private double maior_criterio(Double[] vetorMaior){
+        double maior_crit = 0;
+        for (int i = 0; i < vetorMaior.length; i++) {
+                if(vetorMaior[i] > maior_crit){
+                    maior_crit = vetorMaior[i];
                 }
-        } 
+        }
+        return maior_crit;
     }
     
-    private double valor_arc(double criterioAtual){
-        
-        double a_rc = criterioAtual / maior_crit; 
-        
-        return arredonda(a_rc);
+    private double menor_criterio(Double[] vetorMenor){
+        double menor_crit = vetorMenor[0];
+        for (int i = 0; i < vetorMenor.length; i++) {
+                if(vetorMenor[i] < menor_crit){
+                    menor_crit = vetorMenor[i];
+                }
+        }
+        return menor_crit;
+    }
+    
+    private void taxa_substituicao(){
+        double a_rc, maior_crit;
+        maior_crit =  maior_criterio(normalizedVector);
+        for (int i = 0; i < normalizedVector.length; i++) {
+            a_rc = normalizedVector[i] / maior_crit;
+            taxa_substituicao[i] = a_rc;
+            sum_TxSubst += a_rc;
+        }
     }
     
     
     private void executa(){
-        double a_rc, result_pesos, aux = 0, soma_arc, fator = 1;
+        double a_rc, result_pesos, aux = 0, fator = 1;
         int line;
+        taxa_substituicao();
         
         for (int c = 0; c < normalizedMatrix[0].length; c++) {
             line = 0;
@@ -215,18 +232,17 @@ public void compute(){
                     result_pesos = normalizedMatrix[j][c] - normalizedMatrix[i][c];
                         System.out.println("Valor 1: " + normalizedMatrix[j][c] + "  Valor 2: " + normalizedMatrix[i][c]);
                         
-                        a_rc = valor_arc(normalizedVector[c]);
-                        soma_arc = i + 1;
+                        a_rc = taxa_substituicao[c];
                         
                         if(result_pesos > 0){
-                            aux = maior_zero(result_pesos, a_rc, soma_arc);              
+                            aux = maior_zero(result_pesos, a_rc);              
                         }
                         else if(result_pesos == 0){
                             aux = igual_zero();
                         }       
                         else if(result_pesos < 0){
                             result_pesos = normalizedMatrix[i][c] - normalizedMatrix[j][c];
-                            aux = menor_zero(result_pesos, a_rc, soma_arc, fator);
+                            aux = menor_zero(result_pesos, a_rc, fator);
                         }
                         matrizDominPar[line][c] = aux;
                         line++;
@@ -272,30 +288,19 @@ public void compute(){
         }
     }
     
-    private void normaliza_MatrizFinal(){
-        double sum = 0.0, max = 0, min = 99999;
-        for (int i = 0; i < matrizDominFinal.length; i++) {
-            max =  matrizDominFinal[0][i];
-            min = matrizDominFinal[0][i];
-                for (int r = 0; r < matrizDominFinal[0].length; r++) {
-                    System.out.println("Valor " + (r+1) + ": " + matrizDominFinal[i][r]);
-                    sum = sum + matrizDominFinal[i][r];
-                    if(matrizDominFinal[i][r] > max)
-                        max = matrizDominFinal[i][r];
-                    if (matrizDominFinal[i][r] < min)
-                        min = matrizDominFinal[i][r];
+    private void soma_MatrizFinal(){
+        double sum = 0.0;
+        
+        for (int r = 0; r < matrizDominFinal[0].length; r++) {
+                for (int i = 0; i < matrizDominFinal.length; i++) {
+                   // System.out.println("Valor " + (r+1) + ": " + matrizDominFinal[i][r]);
+                    sum += matrizDominFinal[i][r];
             }
-            System.out.println("Soma: " + sum + " - Menor Valor: " + min + " - Maior Valor: " + max);
-            //resultadoFinal[i] = arredonda(calc_normaliza(sum, min, max));
-            resultadoFinal[i] = arredonda(sum);
+            System.out.println("Soma: " + arredonda(sum));
+            resultadoFinal[r] = arredonda(sum);
             sum = 0.0;
         }
-               
-        //resultadoFinal = normaliza_vetor(resultadoFinal);
-        
-        for (int i = 0; i < resultadoFinal.length; i++) {
-            System.out.println("\n Resultado " + (i+1) + " : " + resultadoFinal[i]);
-        }
+        result_final();
     }
     
     private double calc_normaliza(double soma, double minimo, double maximo){
@@ -305,4 +310,21 @@ public void compute(){
         
         return result;
     }
+    
+    private void result_final(){
+        
+        double max, min;
+        max = maior_criterio(resultadoFinal);
+        min = menor_criterio(resultadoFinal);
+        
+        for (int i = 0; i < resultadoFinal.length; i++) {
+            resultadoFinal[i] = arredonda(calc_normaliza(resultadoFinal[i], min, max));
+            System.out.println("Alternativa " + (i+1) + ": " + resultadoFinal[i]);
+        }
+        
+        
+    }
+    
+    
+    
 }
