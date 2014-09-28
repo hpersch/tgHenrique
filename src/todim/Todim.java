@@ -56,7 +56,7 @@ public void compute(){
 }
 
 public void normaliza (){
-    //normalizedMatrix = normaliza_matriz(originalMatrix);
+    normalizedMatrix = normaliza_matriz(originalMatrix);
     normalizedVector = normaliza_vetor(taxa_criterios);
 }
 
@@ -113,7 +113,7 @@ public void normaliza (){
 
     
     private double arredonda(double valor){
-       BigDecimal valorExato = new BigDecimal(valor).setScale(3, RoundingMode.HALF_UP);
+       BigDecimal valorExato = new BigDecimal(valor).setScale(5, RoundingMode.HALF_UP);
        
        return valorExato.doubleValue();
        
